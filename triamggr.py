@@ -1,3 +1,4 @@
+import sys
 import json
 import requests
 import google.auth
@@ -22,7 +23,6 @@ def get_gcp_iam_permissions():
     """
     gcloud auth の認証情報を利用して GCP IAM API から必要な IAM 権限を取得する
     """
-    # gcloud の認証情報を使用
     credentials, project = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
 
     service = build("iam", "v1", credentials=credentials)
@@ -40,8 +40,12 @@ def get_gcp_iam_permissions():
         return None
 
 def main():
-    # 調べたいTerraformのリソース名
-    resource_name = input("Terraformリソース名を入力（例: google_compute_instance）: ")
+    # 引数のチェック
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <terraform_resource_name>")
+        sys.exit(1)
+
+    resource_name = sys.argv[1]
 
     # Terraformのリソース情報を取得
     resource_info = get_terraform_resource_info(resource_name)
